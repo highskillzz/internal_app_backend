@@ -10,7 +10,7 @@ module.exports = {
 		User.findOne({regno:req.param('regno')},function(err,data){
 			if(data){
 				Timetable.findOne({regno:data.regno},function(err,tt){
-					return res.json(200,{tt:tt,user:data});
+					return res.json(200,{message:"Success",token:jwt.issue({id:data.id})});
 				});
 			}
 			else{
