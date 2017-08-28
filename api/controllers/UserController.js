@@ -10,7 +10,7 @@ module.exports = {
 		User.findOne({regno:req.param('regno')},function(err,data){
 			if(data){
 				Timetable.findOne({regno:data.regno},function(err,tt){
-					return res.json(200,{tt:tt});
+					return res.json(200,{tt:tt,user:data});
 				});
 			}
 			else{
@@ -41,12 +41,34 @@ module.exports = {
 									var arrl=['8:00to8:50','8:51to9:40','10:00to10:50','10:51to11:40','11:50to12:40','12:41to13:30','14:00to14:50','14:51to15:40','16:00to16:50','16:51to17:40','17:50to18:40','18:41to19:30','19:31to20:20','20:21to21:10'];
 									for(i=0;i<timetable.length;i++){
 										for(j=0;j<arr.length;j++){
-											console.log(timetable[i].theory[arr[j]]);
+											var flag=timetable[i].theory[arr[j]];
+											var n=flag.lastIndexOf('-')-1;
+											var slot="";
+											while(flag[n]!='-' && flag!=""){
+												slot+=flag[n];
+												n--;
+											}
+											var sl=slot.split("").reverse().join("");
+											if(user.slots.indexOf(sl)==-1 && slot!=""){
+												user.slots.push(sl);
+											}
 										}
 										for(j=0;j<arrl.length;j++){
-											console.log(timetable[i].lab[arrl[j]]);
+											var flag=timetable[i].lab[arrl[j]];
+											var n=flag.lastIndexOf('-')-1;
+											var slot="";
+											while(flag[n]!='-' && flag!=""){
+												slot+=flag[n];
+												n--;
+											}
+											var sl=slot.split("").reverse().join("");
+											if(user.slots.indexOf(sl)==-1 && slot!=""){
+												user.slots.push(sl);
+											}
 										}
 									}
+									user.save();
+									//console.log(user);
 								});
 							});
 						});
