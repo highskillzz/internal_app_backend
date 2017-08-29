@@ -68,6 +68,7 @@ module.exports = {
 										}
 									}
 									user.save();
+									return res.json(200,{message:"Success",token:jwt.issue({id:user.id})});
 									//console.log(user);
 								});
 							});
