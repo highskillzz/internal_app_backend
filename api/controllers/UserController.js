@@ -20,6 +20,7 @@ module.exports = {
 					//console.log(body);
 					var url="https://myffcs.in:10443/campus/vellore/timetable2/?regNo="+req.param('regno')+"&psswd="+req.param('passwd');
 					vit.post(url,function(err,response,body){
+						//console.log(response);
 						var timetable=JSON.parse(body).timetable;
 						//console.log(timetable);
 						var url="https://myffcs.in:10443/campus/vellore/personalDetails/?regNo="+req.param('regno')+"&psswd="+req.param('passwd');
@@ -79,17 +80,37 @@ module.exports = {
 		});
 	},
 	getTimeTable:function(req,res){
-		var result=[];
 		User.findOne({regno:req.param('query')},function(err,data){
 			if(data){
 				Timetable.findOne({regno:data.regno},function(err,tt){
 					// console.log(tt);
 					// console.log(data.name);
 					// console.log(data.regno);
-					result.push({tt:tt.timetable,name:data.name,regno:data.regno});
+					//console.log(data.slots);
+					var result={tt:tt.timetable,name:data.name,regno:data.regno};
 					return res.json(200,{result:result});
 				});
 			}
+			else{
+				User.find({name:req.param('query')},function(err,data){
+					if(data){
+						var i;
+						var regno=[];
+						//console.log(data);
+						for(i=0;i<data.length;i++){
+							regno.push(data[i].regno);
+						}
+						Timetable.find({regno:regno},function(err,t_data){
+							var i=0;
+							var result=[];
+							for(i=0;i<t_data.length;i++){
+								result.push({tt:t_data[i].timetable,name:data[i].name,regno:data[i].regno});
+							}
+							return res.json(200,{result:result});
+						});
+					}
+				});
+			}	
 		});
 	}
 };
