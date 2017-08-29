@@ -77,6 +77,20 @@ module.exports = {
 				});
 			}
 		});
+	},
+	getTimeTable:function(req,res){
+		var result=[];
+		User.findOne({regno:req.param('query')},function(err,data){
+			if(data){
+				Timetable.findOne({regno:data.regno},function(err,tt){
+					// console.log(tt);
+					// console.log(data.name);
+					// console.log(data.regno);
+					result.push({tt:tt.timetable,name:data.name,regno:data.regno});
+					return res.json(200,{result:result});
+				});
+			}
+		});
 	}
 };
 
